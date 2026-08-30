@@ -1,49 +1,26 @@
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
-import { db } from './db';
-import {prompts} from './db/schema';
-import { eq } from 'drizzle-orm';
+import { serve } from '@hono/node-server';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import promptsRouter from './routes/prompts';
+import projectsRouter from './routes/projects';
+import analyticsRouter from './routes/analytics';
+import dotenv from 'dotenv';
+dotenv.config();
 
+const app = new Hono();
 
-const app = new Hono()
+app.use('/*', cors());
 
-// Enable CORS for your Next.js frontend and SDKs
-app.use('/*', cors())
+app.get('/health', (c) => c.json({ status: 'healthy', timestamp: new Date().toISOString() }));
 
-// Health check endpoint
-app.get('/health', (c) => {
-  return c.json({ status: 'healthy', timestamp: new Date().toISOString() })
-})
+// Mount modular routers
+app.route('/api/v1/prompts', promptsRouter);
+app.route('/api/v1/projects', projectsRouter);
+app.route('/api/v1/analytics', analyticsRouter);
 
-// Create a prompt
-app.post('/api/v1/prompts', async (c) => {
-  const body = await c.req.json();
-  const newPrompt = {
-    id: crypto.randomUUID(),
-    projectId: body.projectId,
-    name: body.name,
-    version: body.version,
-    template: body.template,
-    createdAt: new Date().toISOString(),
-  };
-  await db.insert(prompts).values(newPrompt);
-  return c.json({ success: true, data: newPrompt });
-});
+const port = Number(process.env.BACKEND_PORT) || 4000;
+console.log(`Server is running on port ${port}`);
 
-// Get prompts
-app.get('/api/v1/prompts/:name', async (c) => {
-  const name = c.req.param('name');
-  const result = await db.select().from(prompts).where(eq(prompts.name, name));
-  return c.json({ success: true, data: result });
-});
+serve({ fetch: app.fetch, port });
 
-const port = 4000
-console.log(`Server is running on port ${port}`)
-
-serve({
-  fetch: app.fetch,
-  port
-})
-
-export default app
+export default app;
