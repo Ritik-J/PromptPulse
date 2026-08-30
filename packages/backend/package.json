@@ -5,14 +5,21 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.1",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.4.12"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^20.14.9",
+    "drizzle-kit": "^0.31.10",
     "tsx": "^4.16.2",
     "typescript": "^5.5.3",
     "wrangler": "^3.62.0"

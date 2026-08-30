@@ -71,3 +71,4 @@ build/
 *.njsproj
 *.sln
 *.swp
+sqlite.db
