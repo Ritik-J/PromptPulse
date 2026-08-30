@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompt-tool-sdk"
+version = "0.1.0"
+description = "Prompt Pulse Python SDK"
+authors = [
+  { name="Prompt Pulse Team", email="team@promptpulse.dev" },
+]
+dependencies = [
+  "requests"
+]
+
+[tool.setuptools]
+packages = ["prompt_tool"]
