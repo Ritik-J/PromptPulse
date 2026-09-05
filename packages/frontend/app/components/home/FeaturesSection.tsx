@@ -1,6 +1,8 @@
 'use client'
 
 import { History, BarChart2, Activity, Globe } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 const FEATURES = [
   {
@@ -13,8 +15,8 @@ const FEATURES = [
         style={{ background: 'var(--surface-lowest)', border: '1px solid var(--surface-variant)' }}>
         <div className="flex items-center justify-between pb-1.5 border-b mb-2"
           style={{ borderColor: 'rgba(53,52,56,0.4)' }}>
-          <span className="font-medium" style={{ color: 'var(--primary)' }}>git prompt log --oneline</span>
-          <span className="text-[10px] text-emerald-400">SYNCED</span>
+          <span className="font-medium" style={{ color: 'var(--primary-color)' }}>git prompt log --oneline</span>
+          <Badge variant="success" className="text-[10px] py-0 h-4">SYNCED</Badge>
         </div>
         <div className="space-y-1 text-[11px]">
           <div className="text-emerald-400">91a4fd2 (HEAD → canary) feat: add strict JSON citation guard</div>
@@ -34,7 +36,7 @@ const FEATURES = [
         style={{ background: 'var(--surface-lowest)', border: '1px solid var(--surface-variant)' }}>
         <div className="flex items-center justify-between pb-2 text-[11px]" style={{ color: 'var(--outline)' }}>
           <span>Traffic Distribution</span>
-          <span style={{ color: 'var(--primary)' }}>Confidence: 99.4%</span>
+          <span style={{ color: 'var(--primary-color)' }}>Confidence: 99.4%</span>
         </div>
         <div className="w-full h-2 rounded-full overflow-hidden flex"
           style={{ background: 'var(--surface-container)' }}>
@@ -57,7 +59,7 @@ const FEATURES = [
       <div className="mt-6 grid grid-cols-3 gap-2 font-mono text-xs text-center">
         {[
           { label: 'P95 LATENCY', value: '374ms', color: '#34d399' },
-          { label: 'TOKEN SPEND', value: '-22.5%', color: 'var(--primary)' },
+          { label: 'TOKEN SPEND', value: '-22.5%', color: 'var(--primary-color)' },
           { label: 'DRIFT ALERTS', value: '0 Active', color: '#34d399' },
         ].map(({ label, value, color }) => (
           <div key={label} className="p-2 rounded"
@@ -77,14 +79,9 @@ const FEATURES = [
     preview: (
       <div className="mt-6 flex flex-wrap items-center gap-2 text-xs font-mono">
         {['Claude 3.5', 'GPT-4o', 'DeepSeek-V3', 'Gemini 1.5 Pro', 'Llama-3.3-70B'].map(model => (
-          <span key={model} className="px-2.5 py-1 rounded"
-            style={{
-              background: 'var(--surface-lowest)',
-              border: '1px solid var(--surface-variant)',
-              color: 'var(--on-surface)',
-            }}>
+          <Badge key={model} variant="outline" className="font-mono text-xs font-normal">
             {model}
-          </span>
+          </Badge>
         ))}
       </div>
     ),
@@ -96,16 +93,11 @@ export default function FeaturesSection() {
     <section className="w-full max-w-6xl mx-auto px-6 py-16" id="features">
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <span className="text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded"
-          style={{
-            color: 'var(--primary-container)',
-            background: 'var(--surface-container)',
-            border: '1px solid rgba(76,70,63,0.4)',
-          }}>
+        <Badge variant="secondary" className="px-2.5 py-1 text-xs uppercase tracking-wider font-normal">
           Architected for Scale
-        </span>
+        </Badge>
         <h2 className="mt-3 text-2xl md:text-[28px] font-bold tracking-tight"
-          style={{ fontFamily: 'var(--font-space-grotesk)', color: 'var(--primary)' }}>
+          style={{ fontFamily: 'var(--font-space-grotesk)', color: 'var(--primary-color)' }}>
           Everything prompt engineers need to ship confidently
         </h2>
         <p className="mt-2 text-sm" style={{ color: 'var(--on-surface-variant)', lineHeight: '20px' }}>
@@ -116,25 +108,18 @@ export default function FeaturesSection() {
       {/* Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {FEATURES.map(({ icon: Icon, title, description, preview }) => (
-          <div key={title}
-            className="rounded-xl p-6 flex flex-col justify-between group transition-all duration-200"
-            style={{
-              background: 'var(--surface-low)',
-              border: '1px solid var(--surface-variant)',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--outline)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--surface-variant)')}>
+          <Card key={title} className="p-6 flex flex-col justify-between group transition-all duration-200 hover:border-[var(--outline)]">
             <div>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-colors"
                 style={{
                   background: 'var(--surface-high)',
                   border: '1px solid var(--outline-variant)',
-                  color: 'var(--primary)',
+                  color: 'var(--primary-color)',
                 }}>
                 <Icon size={19} />
               </div>
               <h3 className="text-lg font-semibold"
-                style={{ fontFamily: 'var(--font-space-grotesk)', color: 'var(--primary)' }}>
+                style={{ fontFamily: 'var(--font-space-grotesk)', color: 'var(--primary-color)' }}>
                 {title}
               </h3>
               <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--on-surface-variant)', lineHeight: '18px' }}>
@@ -142,7 +127,7 @@ export default function FeaturesSection() {
               </p>
             </div>
             {preview}
-          </div>
+          </Card>
         ))}
       </div>
     </section>

@@ -1,5 +1,30 @@
 @import "tailwindcss";
 
+@layer base {
+  :root {
+    --background: 240 10% 4%;
+    --foreground: 270 10% 90%;
+    --card: 240 9% 7%;
+    --card-foreground: 270 10% 90%;
+    --popover: 240 9% 7%;
+    --popover-foreground: 270 10% 90%;
+    --primary: 32 28% 85%;
+    --primary-foreground: 24 46% 15%;
+    --secondary: 260 11% 20%;
+    --secondary-foreground: 260 10% 85%;
+    --muted: 240 6% 14%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 6% 16%;
+    --accent-foreground: 270 10% 90%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 18%;
+    --input: 240 5% 18%;
+    --ring: 32 28% 85%;
+    --radius: 0.5rem;
+  }
+}
+
 /* ── Design Tokens ─────────────────────────────────────────────── */
 :root {
   --surface:                #131316;
@@ -12,14 +37,14 @@
   --surface-dim:            #131316;
   --surface-variant:        #353438;
 
-  --primary:                #e4d9cd;
+  --primary-color:          #e4d9cd;
   --primary-container:      #c8bdb2;
   --primary-fixed:          #ece1d5;
   --primary-fixed-dim:      #d0c5ba;
   --on-primary:             #362f28;
   --on-primary-fixed:       #201b14;
 
-  --secondary:              #c9c4d1;
+  --secondary-color:        #c9c4d1;
   --secondary-container:    #484550;
   --on-secondary:           #312f39;
 
@@ -36,8 +61,6 @@
 
   --error:                  #ffb4ab;
   --error-container:        #93000a;
-
-  --background:             #131316;
 }
 
 /* ── Base Reset & Typography ───────────────────────────────────── */

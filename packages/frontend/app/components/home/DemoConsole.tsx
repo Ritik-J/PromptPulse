@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { GitBranch, Verified, Gauge, Banknote, TrendingUp } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 const TELEMETRY = [
   { label: 'Bayesian Confidence', value: '99.4% (Statistically Sig.)', icon: Verified, color: '#34d399' },
@@ -22,12 +25,7 @@ export default function DemoConsole() {
 
   return (
     <section className="w-full max-w-6xl mx-auto px-6 my-8" id="demo-console">
-      <div className="rounded-xl overflow-hidden"
-        style={{
-          background: 'var(--surface-low)',
-          border: '1px solid var(--surface-variant)',
-          boxShadow: '0 12px 48px rgba(0,0,0,0.7)',
-        }}>
+      <Card className="rounded-xl overflow-hidden p-0 border-[var(--surface-variant)] shadow-2xl">
 
         {/* ── Window Chrome ── */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b"
@@ -46,10 +44,9 @@ export default function DemoConsole() {
               <span style={{ color: 'var(--on-surface)', fontWeight: 500 }}>
                 experiment/rag-customer-support-agent
               </span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono"
-                style={{ background: 'var(--surface-container)', color: 'var(--outline)' }}>
+              <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px] font-mono font-normal">
                 active-canary
-              </span>
+              </Badge>
             </div>
           </div>
 
@@ -66,18 +63,14 @@ export default function DemoConsole() {
                 {promoted ? '100% Canary' : '20% Canary'}
               </span>
             </div>
-            <button
+            <Button
+              size="sm"
+              variant={promoted ? "success" : "outline"}
               onClick={handlePromote}
-              className="flex items-center gap-1 px-3 py-1 rounded text-xs transition-all"
-              style={{
-                background: promoted ? 'rgba(6,78,59,0.6)' : 'var(--surface-high)',
-                border: promoted ? '1px solid #065f46' : '1px solid rgba(152,143,135,0.4)',
-                color: promoted ? '#6ee7b7' : 'var(--primary)',
-                opacity: promoting ? 0.75 : 1,
-              }}>
+              className="flex items-center gap-1 h-7 text-xs font-mono">
               <TrendingUp size={13} />
               {promoting ? 'Deploying...' : promoted ? '100% Canary Active' : 'Promote to 100%'}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -98,8 +91,7 @@ export default function DemoConsole() {
         </div>
 
         {/* ── Split Pane Diff ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x text-xs font-mono"
-          style={{ divideColor: 'var(--surface-variant)' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[var(--surface-variant)] text-xs font-mono">
 
           {/* Left: Baseline */}
           <div className="p-4 flex flex-col" style={{ background: 'rgba(14,14,17,0.8)' }}>
@@ -108,8 +100,7 @@ export default function DemoConsole() {
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full" style={{ background: 'var(--outline)' }} />
                 <span style={{ color: 'var(--on-surface)', fontWeight: 600 }}>v2.4.0 (Production Baseline)</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px]"
-                  style={{ color: 'var(--outline)', background: 'var(--surface-container)' }}>commit: 7f3bc8a</span>
+                <Badge variant="outline" className="px-1.5 py-0.5 text-[10px] font-normal">commit: 7f3bc8a</Badge>
               </div>
               <span style={{ color: 'var(--outline)' }}>Claude 3.5 Sonnet</span>
             </div>
@@ -118,7 +109,7 @@ export default function DemoConsole() {
               <div style={{ color: 'var(--outline)' }}>// System instructions</div>
               <p>You are a tier-1 customer success assistant for Acme Cloud infrastructure.</p>
               <p>Answer customer questions accurately using solely the provided context chunks.</p>
-              <div className="p-2 rounded" style={{ background: 'var(--surface-low)', border: '1px solid rgba(53,52,56,0.6)', color: 'var(--secondary)' }}>
+              <div className="p-2 rounded" style={{ background: 'var(--surface-low)', border: '1px solid rgba(53,52,56,0.6)', color: 'var(--secondary-color)' }}>
                 Context Payload: <code style={{ color: 'var(--primary-container)' }}>{'{{documentation_context}}'}</code>
               </div>
               <p>Do not guess if unsure. Respond politely and concisely.</p>
@@ -139,10 +130,7 @@ export default function DemoConsole() {
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span style={{ color: 'var(--on-surface)', fontWeight: 600 }}>v2.4.1 (Canary Candidate)</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px]"
-                  style={{ color: '#6ee7b7', background: 'rgba(6,78,59,0.4)', border: '1px solid rgba(6,95,70,0.4)' }}>
-                  commit: 91a4fd2
-                </span>
+                <Badge variant="success" className="px-1.5 py-0 text-[10px]">commit: 91a4fd2</Badge>
               </div>
               <span style={{ color: 'var(--outline)' }}>Claude 3.5 Sonnet (Temp: 0.1)</span>
             </div>
@@ -154,13 +142,13 @@ export default function DemoConsole() {
                 style={{ borderColor: '#10b981', background: 'rgba(6,78,59,0.3)', color: '#6ee7b7' }}>
                 + Strict Constraint: Apply structured JSON citation markers for every cited SLA or pricing claim.
               </p>
-              <div className="p-2 rounded" style={{ background: 'var(--surface-low)', border: '1px solid rgba(53,52,56,0.6)', color: 'var(--secondary)' }}>
+              <div className="p-2 rounded" style={{ background: 'var(--surface-low)', border: '1px solid rgba(53,52,56,0.6)', color: 'var(--secondary-color)' }}>
                 Context Payload: <code style={{ color: 'var(--primary-container)' }}>{'{{documentation_context}}'}</code>
               </div>
               <p className="pl-2 py-0.5 rounded-r border-l-2"
                 style={{ borderColor: '#10b981', background: 'rgba(6,78,59,0.3)', color: '#6ee7b7' }}>
                 + Guardrail: If query is outside domain scope, reject with error code{' '}
-                <code style={{ color: 'var(--primary)', fontWeight: 600 }}>{'{{OUT_OF_DOMAIN}}'}</code>.
+                <code style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{'{{OUT_OF_DOMAIN}}'}</code>.
               </p>
               <div className="pt-2" style={{ color: 'var(--outline)' }}>// User prompt template</div>
               <p>User Question: <code style={{ color: 'var(--primary-container)' }}>{'{{customer_query}}'}</code></p>
@@ -188,7 +176,7 @@ export default function DemoConsole() {
             <span style={{ color: 'var(--on-surface-variant)' }}>Canary health 100% stable</span>
           </div>
         </div>
-      </div>
+      </Card>
     </section>
   )
 }

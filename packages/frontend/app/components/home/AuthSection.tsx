@@ -2,6 +2,11 @@
 
 import { useState } from 'react'
 import { KeyRound } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 
 type AuthMode = 'signup' | 'signin'
 
@@ -36,35 +41,29 @@ function GoogleIcon() {
 export default function AuthSection() {
   const [mode, setMode] = useState<AuthMode>('signup')
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault()
-    // Placeholder — wire up to backend auth
     alert('Auth placeholder — connect your backend!')
   }
 
   return (
     <section className="w-full max-w-4xl mx-auto px-6 py-16" id="auth-section">
-      <div className="relative rounded-2xl p-8 md:p-12 overflow-hidden grid-subtle"
-        style={{
-          background: 'var(--surface-container)',
-          border: '1px solid var(--surface-variant)',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-        }}>
+      <Card className="relative p-8 md:p-12 overflow-hidden grid-subtle">
 
         {/* Ambient glow */}
         <div className="absolute -top-24 -left-24 w-60 h-60 rounded-full blur-3xl pointer-events-none"
           style={{ background: 'rgba(200,189,178,0.07)' }} />
 
-        <div className="relative max-w-md mx-auto text-center">
+        <CardContent className="relative max-w-md mx-auto text-center p-0">
           {/* Icon */}
           <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: 'var(--surface-high)', border: '1px solid rgba(152,143,135,0.3)', color: 'var(--primary)' }}>
+            style={{ background: 'var(--surface-high)', border: '1px solid rgba(152,143,135,0.3)', color: 'var(--primary-color)' }}>
             <KeyRound size={22} />
           </div>
 
           {/* Heading */}
           <h2 className="text-2xl font-bold tracking-tight"
-            style={{ fontFamily: 'var(--font-space-grotesk)', color: 'var(--primary)' }}>
+            style={{ fontFamily: 'var(--font-space-grotesk)', color: 'var(--primary-color)' }}>
             Join top LLM engineering teams
           </h2>
           <p className="mt-2 text-xs" style={{ color: 'var(--on-surface-variant)' }}>
@@ -77,89 +76,67 @@ export default function AuthSection() {
               { icon: <GithubIcon />, label: 'Continue with GitHub' },
               { icon: <GoogleIcon />, label: 'Continue with Google' },
             ].map(({ icon, label }) => (
-              <button key={label}
-                className="w-full py-2.5 px-4 rounded-lg flex items-center justify-center gap-3 text-sm transition-colors"
-                style={{
-                  background: 'var(--surface-high)',
-                  border: '1px solid var(--surface-variant)',
-                  color: 'var(--on-surface)',
-                }}>
+              <Button
+                key={label}
+                variant="outline"
+                className="w-full py-2.5 flex items-center justify-center gap-3 text-sm font-normal">
                 {icon}
                 {label}
-              </button>
+              </Button>
             ))}
           </div>
 
           {/* Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t" style={{ borderColor: 'var(--surface-variant)' }} />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="px-2 font-mono" style={{ background: 'var(--surface-container)', color: 'var(--outline)' }}>
-                or with work email
-              </span>
-            </div>
+          <div className="relative my-5 flex items-center justify-center">
+            <Separator className="absolute" />
+            <span className="relative z-10 px-2 font-mono text-[11px] uppercase"
+              style={{ background: 'var(--surface-container)', color: 'var(--outline)' }}>
+              or with work email
+            </span>
           </div>
 
           {/* Email / Password */}
           <form onSubmit={handleSubmit} className="space-y-3 text-left">
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--on-surface-variant)' }}>
-                Work Email
-              </label>
-              <input
+              <Label className="block mb-1">Work Email</Label>
+              <Input
                 type="email"
                 required
                 placeholder="alex@engineering.ai"
-                className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all"
-                style={{
-                  background: 'var(--surface-lowest)',
-                  border: '1px solid var(--surface-variant)',
-                  color: 'var(--on-surface)',
-                }}
-                onFocus={e => (e.target.style.borderColor = 'var(--primary-container)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--surface-variant)')}
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-medium" style={{ color: 'var(--on-surface-variant)' }}>Password</label>
-                <a href="#" className="text-[11px] transition-colors hover:text-[color:var(--primary)]"
+                <Label>Password</Label>
+                <a href="#" className="text-[11px] transition-colors hover:text-[color:var(--primary-color)]"
                   style={{ color: 'var(--outline)' }}>Forgot?</a>
               </div>
-              <input
+              <Input
                 type="password"
                 required
                 placeholder="••••••••••••"
-                className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all"
-                style={{
-                  background: 'var(--surface-lowest)',
-                  border: '1px solid var(--surface-variant)',
-                  color: 'var(--on-surface)',
-                }}
-                onFocus={e => (e.target.style.borderColor = 'var(--primary-container)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--surface-variant)')}
               />
             </div>
-            <button type="submit"
-              className="w-full mt-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all shadow-md"
-              style={{ background: 'var(--primary-container)', color: 'var(--on-primary-fixed)' }}>
+            <Button
+              type="submit"
+              variant="brand"
+              size="lg"
+              className="w-full mt-2">
               {mode === 'signup' ? 'Create PromptPulse Account' : 'Sign In'}
-            </button>
+            </Button>
           </form>
 
           <p className="mt-4 text-xs" style={{ color: 'var(--outline)' }}>
             {mode === 'signup' ? 'Already have an account? ' : "Don't have an account? "}
-            <button
+            <Button
+              variant="link"
               onClick={() => setMode(m => m === 'signup' ? 'signin' : 'signup')}
-              className="font-medium transition-colors hover:underline"
-              style={{ color: 'var(--primary)' }}>
+              className="font-medium">
               {mode === 'signup' ? 'Sign in' : 'Sign up'}
-            </button>
+            </Button>
           </p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </section>
   )
 }
