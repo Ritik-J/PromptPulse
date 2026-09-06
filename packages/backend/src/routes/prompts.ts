@@ -1,12 +1,12 @@
-import { Hono } from 'hono';
-import { db } from '../db/index';
-import { prompts } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { Hono } from "hono";
+import { db } from "../db/index";
+import { prompts } from "../db/schema";
+import { eq } from "drizzle-orm";
 
 const promptsRouter = new Hono();
 
 // Create a prompt
-promptsRouter.post('/', async (c) => {
+promptsRouter.post("/", async (c) => {
   const body = await c.req.json();
   const newPrompt = {
     id: crypto.randomUUID(),
@@ -21,8 +21,8 @@ promptsRouter.post('/', async (c) => {
 });
 
 // Get prompts by name
-promptsRouter.get('/:name', async (c) => {
-  const name = c.req.param('name');
+promptsRouter.get("/:name", async (c) => {
+  const name = c.req.param("name");
   const result = await db.select().from(prompts).where(eq(prompts.name, name));
   return c.json({ success: true, data: result });
 });
