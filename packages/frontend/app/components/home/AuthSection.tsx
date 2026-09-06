@@ -14,8 +14,18 @@ import {
   useSession,
   appCallbackURL,
 } from "@/lib/auth-client";
-
-type AuthMode = "signup" | "signin";
+import {
+  friendlyAuthError,
+  normalizeAuthForm,
+  passwordChecks,
+  validateAuthForm,
+  type AuthMode,
+} from "@/lib/auth-validation";
+import {
+  AUTH_UNREACHABLE_ERROR,
+  MAX_PASSWORD_LENGTH,
+  MIN_PASSWORD_LENGTH,
+} from "@/constants/auth";
 
 function GoogleIcon() {
   return (
@@ -45,19 +55,27 @@ export default function AuthSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const { data: session, isPending: sessionPending } = useSession();
 
+  const checks = passwordChecks(password);
+
   async function handleGoogle() {
     setError(null);
     setPending(true);
-    const { error } = await signIn.social({
-      provider: "google",
-      callbackURL: appCallbackURL,
-    });
-    if (error) {
-      setError(error.message ?? "Google sign-in failed");
+    try {
+      const { error } = await signIn.social({
+        provider: "google",
+        callbackURL: appCallbackURL,
+      });
+      if (error) {
+        setError(friendlyAuthError(error));
+        setPending(false);
+      }
+    } catch {
+      setError(AUTH_UNREACHABLE_ERROR);
       setPending(false);
     }
     // On success Better-Auth redirects to Google, so no further handling.
@@ -66,18 +84,45 @@ export default function AuthSection() {
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setError(null);
+
+    const validationError = validateAuthForm(mode, {
+      name,
+      email,
+      password,
+      confirm,
+    });
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    const { name: cleanName, email: cleanEmail } = normalizeAuthForm({
+      name,
+      email,
+      password,
+      confirm,
+    });
+
     setPending(true);
-    const { error } =
-      mode === "signup"
-        ? await signUp.email({
-            name,
-            email,
-            password,
-            callbackURL: appCallbackURL,
-          })
-        : await signIn.email({ email, password, callbackURL: appCallbackURL });
-    if (error) setError(error.message ?? "Authentication failed");
-    setPending(false);
+    try {
+      const { error } =
+        mode === "signup"
+          ? await signUp.email({
+              name: cleanName,
+              email: cleanEmail,
+              password,
+              callbackURL: appCallbackURL,
+            })
+          : await signIn.email({
+              email: cleanEmail,
+              password,
+              callbackURL: appCallbackURL,
+            });
+      if (error) setError(friendlyAuthError(error));
+    } catch {
+      setError(AUTH_UNREACHABLE_ERROR);
+    } finally {
+      setPending(false);
+    }
   }
 
   async function handleSignOut() {
@@ -85,9 +130,7 @@ export default function AuthSection() {
     try {
       await signOut();
     } catch {
-      setError(
-        "Could not reach the auth server. Is the backend running on :4000?",
-      );
+      setError(AUTH_UNREACHABLE_ERROR);
     }
   }
 
@@ -222,12 +265,48 @@ export default function AuthSection() {
                   <Input
                     type="password"
                     required
-                    minLength={8}
+                    minLength={MIN_PASSWORD_LENGTH}
+                    maxLength={MAX_PASSWORD_LENGTH}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
+                    autoComplete={
+                      mode === "signup" ? "new-password" : "current-password"
+                    }
                   />
+                  {mode === "signup" && password.length > 0 && (
+                    <ul className="mt-1.5 space-y-1">
+                      {checks.map((check) => (
+                        <li
+                          key={check.label}
+                          className="text-[11px]"
+                          style={{
+                            color: check.met
+                              ? "var(--primary-color)"
+                              : "var(--outline)",
+                          }}
+                        >
+                          {check.met ? "✓ " : "· "}
+                          {check.label}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
+                {mode === "signup" && (
+                  <div>
+                    <Label className="block mb-1">Confirm Password</Label>
+                    <Input
+                      type="password"
+                      required
+                      minLength={MIN_PASSWORD_LENGTH}
+                      value={confirm}
+                      onChange={(e) => setConfirm(e.target.value)}
+                      placeholder="••••••••••••"
+                      autoComplete="new-password"
+                    />
+                  </div>
+                )}
                 {error && (
                   <p className="text-xs text-red-500" role="alert">
                     {error}
@@ -257,6 +336,7 @@ export default function AuthSection() {
                   onClick={() => {
                     setMode((m) => (m === "signup" ? "signin" : "signup"));
                     setError(null);
+                    setConfirm("");
                   }}
                   className="font-medium"
                 >

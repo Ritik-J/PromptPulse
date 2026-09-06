@@ -31,6 +31,33 @@ export const auth = betterAuth({
   trustedOrigins,
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+    autoSignIn: true,
+    requireEmailVerification: false,
+    resetPasswordTokenExpiresIn: 60 * 60, // 1h
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      // TODO: send via SMTP (Resend/Postmark). Until then, surface the link
+      // in dev logs only — never in production responses.
+      if (process.env.NODE_ENV === "production") {
+        console.warn(
+          `[auth] password-reset requested for ${user.email} but no email provider is configured`,
+        );
+        return;
+      }
+      console.log(`[auth] password-reset link for ${user.email}: ${url}`);
+    },
+  },
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 100,
+    customRules: {
+      "/sign-up/email": { window: 60, max: 5 },
+      "/sign-in/email": { window: 60, max: 10 },
+      "/forget-password": { window: 300, max: 3 },
+    },
   },
   socialProviders: {
     google: {
