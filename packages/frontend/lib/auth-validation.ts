@@ -21,8 +21,6 @@ export interface AuthFormInput {
   confirm: string;
 }
 
-// Maps a Better-Auth server error to user-facing copy. Falls back to the
-// server message so unmapped codes still render something useful.
 export function friendlyAuthError(error: {
   code?: string;
   message?: string;
@@ -51,7 +49,7 @@ export interface NormalizedAuthForm {
   email: string;
 }
 
-// Normalizes raw form state (trim, lowercase email). Pure — no validation.
+// Normalizes raw form state (trim, lowercase email). Pure — no validation
 export function normalizeAuthForm(input: AuthFormInput): NormalizedAuthForm {
   return {
     name: input.name.trim(),
@@ -59,9 +57,6 @@ export function normalizeAuthForm(input: AuthFormInput): NormalizedAuthForm {
   };
 }
 
-// Client-side validation mirroring the server policy (min/max length) so
-// users get instant feedback without a round trip. Returns an error message
-// or null when the input is valid.
 export function validateAuthForm(
   mode: AuthMode,
   input: AuthFormInput,
