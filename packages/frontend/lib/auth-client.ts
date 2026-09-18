@@ -15,3 +15,5 @@ export const appOrigin =
     : "http://localhost:3000");
 
 export const appCallbackURL = `${appOrigin}/`;
+
+export const appDashboardURL = `${appOrigin}/dashboard`;

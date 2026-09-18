@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Terminal } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Terminal, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const NAV_LINKS = [
-  { label: "Projects", href: "#Projects" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Prompt Registry", href: "#registry" },
   { label: "A/B Analytics", href: "#ab-engine", live: true },
   { label: "Docs", href: "#features" },
@@ -30,7 +31,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Brand */}
-        <a href="#" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200"
             style={{
@@ -57,7 +58,7 @@ export default function Navbar() {
               ops
             </Badge>
           </div>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <nav
@@ -65,7 +66,7 @@ export default function Navbar() {
           style={{ color: "var(--on-surface-variant)", fontSize: "13px" }}
         >
           {NAV_LINKS.map(({ label, href, live }) => (
-            <a
+            <Link
               key={label}
               href={href}
               className="flex items-center gap-1 transition-colors duration-150 hover:text-[color:var(--primary-color)]"
@@ -74,7 +75,7 @@ export default function Navbar() {
               {live && (
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               )}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -83,18 +84,20 @@ export default function Navbar() {
           <Button
             variant="ghost"
             size="sm"
+            asChild
             className="hidden sm:inline-flex text-sm"
-            onClick={() => scrollTo("auth-section")}
           >
-            Sign In
+            <Link href="/dashboard">
+              <LayoutDashboard size={14} />
+              <span>Dashboard</span>
+            </Link>
           </Button>
-          <Button
-            variant="brand"
-            size="sm"
-            onClick={() => scrollTo("auth-section")}
-          >
-            Get Started Free
-            <ArrowRight size={14} />
+
+          <Button variant="brand" size="sm" asChild>
+            <Link href="/dashboard">
+              Get Started Free
+              <ArrowRight size={14} />
+            </Link>
           </Button>
 
           {/* Mobile hamburger */}
@@ -124,7 +127,7 @@ export default function Navbar() {
           }}
         >
           {NAV_LINKS.map(({ label, href }) => (
-            <a
+            <Link
               key={label}
               href={href}
               onClick={() => setMenuOpen(false)}
@@ -132,7 +135,7 @@ export default function Navbar() {
               style={{ color: "var(--on-surface-variant)" }}
             >
               {label}
-            </a>
+            </Link>
           ))}
         </div>
       )}

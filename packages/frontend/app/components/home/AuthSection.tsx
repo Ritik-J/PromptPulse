@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { KeyRound } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,7 @@ import {
   signOut,
   useSession,
   appCallbackURL,
+  appDashboardURL,
 } from "@/lib/auth-client";
 import {
   friendlyAuthError,
@@ -59,6 +62,7 @@ export default function AuthSection() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const { data: session, isPending: sessionPending } = useSession();
+  const router = useRouter();
 
   const checks = passwordChecks(password);
 
@@ -68,7 +72,7 @@ export default function AuthSection() {
     try {
       const { error } = await signIn.social({
         provider: "google",
-        callbackURL: appCallbackURL,
+        callbackURL: appDashboardURL,
       });
       if (error) {
         setError(friendlyAuthError(error));
@@ -117,7 +121,11 @@ export default function AuthSection() {
               password,
               callbackURL: appCallbackURL,
             });
-      if (error) setError(friendlyAuthError(error));
+      if (error) {
+        setError(friendlyAuthError(error));
+      } else {
+        router.push("/dashboard");
+      }
     } catch {
       setError(AUTH_UNREACHABLE_ERROR);
     } finally {
@@ -190,6 +198,9 @@ export default function AuthSection() {
                   {error}
                 </p>
               )}
+              <Button variant="brand" size="lg" asChild className="w-full">
+                <Link href="/dashboard">Go to Dashboard</Link>
+              </Button>
               <Button
                 variant="outline"
                 onClick={handleSignOut}
