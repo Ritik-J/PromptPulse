@@ -66,11 +66,15 @@ export const auth = betterAuth({
     },
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // refresh every 24h
+    // Short sliding lifetime: /get-session returns the raw session token to
+    // the browser by Better-Auth design, so a short expiry bounds the damage
+    // if a token is ever exfiltrated (XSS, malicious extension). Active users
+    // stay signed in via sliding refresh; idle users re-authenticate daily.
+    expiresIn: 60 * 60 * 24, // 24h
+    updateAge: 60 * 60 * 12, // refresh after 12h of activity
     cookieCache: {
       enabled: true,
-      maxAge: 60 * 5, // 5 min cache
+      maxAge: 60 * 5, // 5 min — most useSession reads skip the network
     },
   },
   advanced: {

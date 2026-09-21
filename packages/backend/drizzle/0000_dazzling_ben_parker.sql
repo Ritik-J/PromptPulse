@@ -22,13 +22,36 @@ CREATE TABLE `analytics_logs` (
 	`tokens_used` integer NOT NULL,
 	`latency_ms` integer NOT NULL,
 	`cost_usd` text NOT NULL,
-	`timestamp` text NOT NULL
+	`ok` integer,
+	`timestamp` text NOT NULL,
+	FOREIGN KEY (`prompt_id`) REFERENCES `prompts`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE INDEX `analytics_logs_prompt_time_idx` ON `analytics_logs` (`prompt_id`,`timestamp`);--> statement-breakpoint
+CREATE TABLE `audit_logs` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`project_id` text,
+	`action` text NOT NULL,
+	`ref` text NOT NULL,
+	`target` text NOT NULL,
+	`author` text,
+	`created_at` text NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `projects` (
 	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
 	`name` text NOT NULL,
-	`created_at` text NOT NULL
+	`title` text NOT NULL,
+	`description` text,
+	`environment` text NOT NULL,
+	`model` text,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `prompts` (
@@ -37,7 +60,10 @@ CREATE TABLE `prompts` (
 	`name` text NOT NULL,
 	`version` text NOT NULL,
 	`template` text NOT NULL,
-	`created_at` text NOT NULL
+	`status` text NOT NULL,
+	`traffic_pct` integer,
+	`created_at` text NOT NULL,
+	FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `session` (
@@ -71,4 +97,11 @@ CREATE TABLE `verification` (
 	`expires_at` integer NOT NULL,
 	`created_at` integer,
 	`updated_at` integer
+);
+--> statement-breakpoint
+CREATE TABLE `workspace_settings` (
+	`user_id` text PRIMARY KEY NOT NULL,
+	`monthly_budget_usd` integer NOT NULL,
+	`updated_at` text NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );

@@ -4,6 +4,8 @@ import { cors } from "hono/cors";
 import promptsRouter from "./routes/prompts";
 import projectsRouter from "./routes/projects";
 import analyticsRouter from "./routes/analytics";
+import dashboardRouter from "./routes/dashboard";
+import auditRouter from "./routes/audit";
 import authRouter from "./routes/auth";
 import dotenv from "dotenv";
 import path from "node:path";
@@ -40,11 +42,15 @@ app.get("/health", (c) =>
 app.use("/api/v1/prompts/*", requireAuth);
 app.use("/api/v1/projects/*", requireAuth);
 app.use("/api/v1/analytics/*", requireAuth);
+app.use("/api/v1/dashboard/*", requireAuth);
+app.use("/api/v1/audit-logs/*", requireAuth);
 
 // Mount modular routers
 app.route("/api/v1/prompts", promptsRouter);
 app.route("/api/v1/projects", projectsRouter);
 app.route("/api/v1/analytics", analyticsRouter);
+app.route("/api/v1/dashboard", dashboardRouter);
+app.route("/api/v1/audit-logs", auditRouter);
 app.route("/api/v1/auth", authRouter);
 
 const port = Number(process.env.BACKEND_PORT) || 4000;

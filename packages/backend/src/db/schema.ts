@@ -1,28 +1,78 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
 
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(),
+  // Ownership: every query must scope by the session user.
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull(), // slug, e.g. proj_customer_support
+  title: text("title").notNull(), // display name
+  description: text("description"),
+  environment: text("environment").notNull().$defaultFn(() => "production"),
+  model: text("model"), // primary model shown on the card
   createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
 });
 
 export const prompts = sqliteTable("prompts", {
   id: text("id").primaryKey(),
-  projectId: text("project_id").notNull(),
+  projectId: text("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   version: text("version").notNull(),
   template: text("template").notNull(),
+  status: text("status").notNull().$defaultFn(() => "stable"), // stable | canary | staging
+  trafficPct: integer("traffic_pct").$defaultFn(() => 100), // % of traffic, for splits
   createdAt: text("created_at").notNull(),
 });
 
-export const analyticsLogs = sqliteTable("analytics_logs", {
+export const analyticsLogs = sqliteTable(
+  "analytics_logs",
+  {
+    id: text("id").primaryKey(),
+    promptId: text("prompt_id")
+      .notNull()
+      .references(() => prompts.id, { onDelete: "cascade" }),
+    model: text("model").notNull(),
+    tokensUsed: integer("tokens_used").notNull(),
+    latencyMs: integer("latency_ms").notNull(),
+    // Stored as TEXT (legacy); aggregate with CAST(cost_usd AS REAL).
+    costUsd: text("cost_usd").notNull(),
+    // 1 = success, 0 = error, NULL (legacy rows) = treated as success.
+    ok: integer("ok", { mode: "boolean" }),
+    timestamp: text("timestamp").notNull(), // ISO string, lexicographically sortable
+  },
+  (t) => [
+    // Metrics endpoint filters by prompt + time window.
+    index("analytics_logs_prompt_time_idx").on(t.promptId, t.timestamp),
+  ],
+);
+
+// Chronological project activity for the audit feed.
+export const auditLogs = sqliteTable("audit_logs", {
   id: text("id").primaryKey(),
-  promptId: text("prompt_id").notNull(),
-  model: text("model").notNull(),
-  tokensUsed: integer("tokens_used").notNull(),
-  latencyMs: integer("latency_ms").notNull(),
-  costUsd: text("cost_usd").notNull(),
-  timestamp: text("timestamp").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  projectId: text("project_id").references(() => projects.id, {
+    onDelete: "cascade",
+  }),
+  action: text("action").notNull(), // rolled_out | started_split | adjusted_model | snapshot_created | project_created
+  ref: text("ref").notNull(), // commit hash / tag / snapshot id
+  target: text("target").notNull().$defaultFn(() => ""),
+  author: text("author"), // display handle, e.g. @sarah
+  createdAt: text("created_at").notNull(),
+});
+
+// One row per user: budget + dashboard preferences.
+export const workspaceSettings = sqliteTable("workspace_settings", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id, { onDelete: "cascade" }),
+  monthlyBudgetUsd: integer("monthly_budget_usd").notNull().$defaultFn(() => 1000),
+  updatedAt: text("updated_at").notNull(),
 });
 
 // --- Better-Auth tables (SQLite + Drizzle) ---
