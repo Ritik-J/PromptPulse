@@ -14,6 +14,7 @@ export interface TelemetryMetric {
   trend?: 'up' | 'down' | 'neutral'
   subtitle: string
   iconName: string
+  progressPct?: number
 }
 
 export interface ProjectItem {

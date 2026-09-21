@@ -1,24 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowUpDown, Grid, List, PlusCircle, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { MOCK_PROJECTS, ProjectItem } from '@/app/mock/dashboardMock'
+import { ProjectItem } from '@/app/mock/dashboardMock'
+import { dashboardApi } from '@/lib/dashboard-api'
 import ProjectCard from './ProjectCard'
 
 export default function ProjectsGrid() {
   const [filterEnv, setFilterEnv] = useState<'all' | 'production' | 'staging'>('all')
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
+  const [projects, setProjects] = useState<ProjectItem[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const filteredProjects = MOCK_PROJECTS.filter(project => {
+  useEffect(() => {
+    dashboardApi.projects().then((data) => setProjects(data as ProjectItem[])).catch(() => {
+      setError('Could not load projects. Is the backend running?')
+    })
+  }, [])
+
+  const filteredProjects = (projects ?? []).filter(project => {
     if (filterEnv === 'production') return project.environment === 'production'
     if (filterEnv === 'staging') return project.environment === 'staging'
     return true
   })
 
-  const prodCount = MOCK_PROJECTS.filter(p => p.environment === 'production').length
-  const stagingCount = MOCK_PROJECTS.filter(p => p.environment === 'staging').length
+  const prodCount = (projects ?? []).filter(p => p.environment === 'production').length
+  const stagingCount = (projects ?? []).filter(p => p.environment === 'staging').length
 
   return (
     <section className="space-y-4">
@@ -28,7 +37,7 @@ export default function ProjectsGrid() {
         <Tabs value={filterEnv} onValueChange={(val: any) => setFilterEnv(val)} className="self-start">
           <TabsList className="h-9 p-1">
             <TabsTrigger value="all" className="text-xs">
-              All Projects ({MOCK_PROJECTS.length})
+              All Projects ({(projects ?? []).length})
             </TabsTrigger>
             <TabsTrigger value="production" className="text-xs">
               Production ({prodCount})
@@ -69,7 +78,24 @@ export default function ProjectsGrid() {
       </div>
 
       {/* PROJECTS GRID / TABLE */}
-      {viewMode === 'grid' ? (
+      {error ? (
+        <div className="rounded-xl border border-[var(--surface-variant)] p-4 text-xs font-mono text-red-400">
+          {error}
+        </div>
+      ) : !projects ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[0, 1].map((i) => (
+            <div key={i} className="rounded-xl border border-[var(--surface-variant)] bg-[var(--surface-low)] p-4 space-y-3 animate-pulse">
+              <div className="h-4 w-40 rounded bg-[var(--surface-high)]" />
+              <div className="h-3 w-24 rounded bg-[var(--surface-high)]" />
+            </div>
+          ))}
+        </div>
+      ) : filteredProjects.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-[var(--surface-variant)] p-8 text-center text-xs font-mono text-[var(--outline)]">
+          No projects yet. Create your first project to get started.
+        </div>
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredProjects.map((project: ProjectItem) => (
             <ProjectCard key={project.id} project={project} />
